@@ -18,6 +18,10 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 # include_directories(${CUDA_INCLUDE_DIRS})
 
 
+set(Header_DIR "include/")
+include_directories(${Header_DIR})
+
+
 
 # Warnings / Errors
 add_compile_options(-std=c++14 -Wall -Wno-unused-function -Wno-unused-variable
@@ -27,8 +31,8 @@ add_compile_options(-std=c++14 -Wall -Wno-unused-function -Wno-unused-variable
 # Don't follow symlinks when FILE GLOB_RECURSE (and don't warn)
 cmake_policy(SET CMP0009 NEW)
 
-set(CUDA_HOST_COMPILER "/usr/bin/g++")
-set(BUILD_TESTS OFF CACHE BOOL "Build unit tests")
+# set(CUDA_HOST_COMPILER "/usr/bin/g++")
+# set(BUILD_TESTS OFF CACHE BOOL "Build unit tests")
 
 
 # boost
@@ -48,7 +52,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 
 file(GLOB srcs *.cpp)
-file(GLOB inputs_ros camera/*.cpp)
+file(GLOB lib lib/*.cpp)
 # file(GLOB cuda cuda/*.cu)
 # file(GLOB cuda_containers cuda/containers/*.cpp)
 
@@ -68,7 +72,7 @@ file(GLOB inputs_ros camera/*.cpp)
 
 add_executable(${PROJECT_NAME}
                ${srcs}
-               ${inputs_ros}
+               ${lib}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
