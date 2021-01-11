@@ -2,10 +2,15 @@ cmake_minimum_required(VERSION 3.1.0)
 project(viewer)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/")
+set(Pangolin_DIR "/home/developer/co-fusion/deps/Pangolin/build")
+
 #find_package(cv_bridge_1_13 REQUIRED)
 
 #set(OpenCV_DIR "/home/developer/co-fusion/deps/opencv-3.1.0/build")
 #set(cv_bridge_DIR "/home/developer/packages/vision_opencv/cv_bridge/install/share/cv_bridge/cmake")
+
+set(shader_dir "shaders/")
+include_directories(${shader_dir})
 
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg cv_bridge image_transport)  
 include_directories(${catkin_INCLUDE_DIRS}) 
@@ -15,15 +20,15 @@ find_package(OpenCV 3.2 REQUIRED)
 find_package(CUDA REQUIRED)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
-# include_directories(${CUDA_INCLUDE_DIRS})
+include_directories(${CUDA_INCLUDE_DIRS})
+
+find_package(glfw3 3.2.1 REQUIRED)
+find_package(OpenGL REQUIRED)
 
 
-set(Header_DIR "include/")
-include_directories(${Header_DIR})
 
 
-
-# Warnings / Errors
+# Warnings / Errors   -lGLU -lGL -lGLEW -lglfw
 add_compile_options(-std=c++14 -Wall -Wno-unused-function -Wno-unused-variable
   -Wno-unused-but-set-variable -Wno-unused-but-set-variable -Wno-write-strings
   -Wno-deprecated -Wno-deprecated-declarations -Wno-unknown-pragmas)
@@ -31,8 +36,8 @@ add_compile_options(-std=c++14 -Wall -Wno-unused-function -Wno-unused-variable
 # Don't follow symlinks when FILE GLOB_RECURSE (and don't warn)
 cmake_policy(SET CMP0009 NEW)
 
-# set(CUDA_HOST_COMPILER "/usr/bin/g++")
-# set(BUILD_TESTS OFF CACHE BOOL "Build unit tests")
+set(CUDA_HOST_COMPILER "/usr/bin/g++")
+set(BUILD_TESTS OFF CACHE BOOL "Build unit tests")
 
 
 # boost
@@ -51,10 +56,16 @@ include_directories(${Eigen3_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR})
 
 
+find_package(Pangolin 0.1 REQUIRED)
+message("Pangolin_INCLUDE_DIRS: ${Pangolin_INCLUDE_DIRS}")
+include_directories(${Pangolin_INCLUDE_DIRS})
+
+
 file(GLOB srcs *.cpp)
-file(GLOB lib lib/*.cpp)
+# file(GLOB inputs_ros inputs/ros/*.cpp)
 # file(GLOB cuda cuda/*.cu)
 # file(GLOB cuda_containers cuda/containers/*.cpp)
+
 
 
 
@@ -72,22 +83,35 @@ file(GLOB lib lib/*.cpp)
 
 add_executable(${PROJECT_NAME}
                ${srcs}
-               ${lib}
+               ${VertexBuffer.cpp}
+#                ${VertexArray.cpp}
+               ${Renderer.cpp}
+               ${texture.cpp}
+#                ${OGL.cpp}
+#                ${inputs_ros}
+#                ${cuda}
+#                ${cuda_objs}
+#                ${cuda_containers}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CUDA_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
     ${BOOST_INCLUDE_DIRS}
+    ${Pangolin_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME}
     ${Eigen_LIBRARIES}
     ${cv_bridge_LIBRARIES}
     ${catkin_LIBRARIES}
+    ${CUDA_LIBRARIES}
     ${OpenCV_LIBRARIES}
+    ${Pangolin_LIBRARIES}
     boost_filesystem
     boost_system
     pthread
+    glfw
   )
 
