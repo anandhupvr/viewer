@@ -84,6 +84,7 @@ file(GLOB srcs *.cpp)
 add_executable(${PROJECT_NAME}
                ${srcs}
                ${VertexBuffer.cpp}
+               ${ResourceManager.cpp}
 #                ${VertexArray.cpp}
                ${Renderer.cpp}
                ${texture.cpp}
